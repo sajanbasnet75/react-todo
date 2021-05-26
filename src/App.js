@@ -7,16 +7,33 @@ import AddTask from './components/AddTask';
 
 const App = () => {
   const [showTaskAddForm, setTaskAddForm] = useState(false)
+
+  // I have put this default/initial state as empty array
+  // setTasks is a setter function that can be called to change the state
   const [tasks, setTasks] = useState([])
 
-
+  // useEffect is a function where the first argument is a function
+  // this function is called when (component mounts, state changes, component dismount)
+  // basically this useEffect is called when the page loads
   useEffect(() => {
+    // fetch the data from server and update the state
     const getTasks = async () => {
       const tasks = await fetchTasks()
       setTasks(tasks)
     }
     getTasks()
   }, [])
+
+  // above a the empty array is a dependency array i.e no dependency which means
+  // useEffect will only run once when the component is mounted/initialized
+  
+  // if we haven't used the empty array as a dependency array above
+  // then there would have been an infinite loop i.e the useEffect would be 
+  // called when page loads then it fetches the data 
+  // after fetch it updates the state which then triggers another fetch and so on, thus infinite loop
+
+  // there might be other case where we might want to rerun the function any time a state changes
+  // then we can add the state in the dependency array [tasks] 
 
 
   const fetchTasks = async () => {
@@ -60,10 +77,10 @@ const App = () => {
   }
 
 
-  const toggleReminder = async(id) => {
+  const toggleReminder = async (id) => {
 
     const task = await fetchTask(id)
-    const updateTask = {...task, reminder: !task.reminder}
+    const updateTask = { ...task, reminder: !task.reminder }
 
     const resp = await fetch(`http://localhost:5000/tasks/${id}`, {
       method: 'PUT',
@@ -105,5 +122,3 @@ const App = () => {
     </div>
   )
 }
-
-export default App
